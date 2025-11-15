@@ -1,0 +1,38 @@
+name: Deploy Portfolio to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        # We'll tag the image with a unique ID from the commit for easy tracking
+        run: docker build -t portfolio-image:${{ github.sha }} .
+
+      - name: Stop and Remove Old Container
+        # This gracefully removes the old version before launching the new one
+        run: |
+          if [ $(docker ps -q -f name=portfolio-container) ]; then
+            docker stop portfolio-container
+            docker rm portfolio-container
+          fi
+      
+      - name: Run New Container
+        # This is the "docker run" version of your compose file
+        run: |
+          docker run -d \
+            --name portfolio-container \
+            --restart unless-stopped \
+            --network npm-network \
+            portfolio-image:${{ github.sha }}
+
+      - name: Prune Old Images
+        run: docker image prune -a -f

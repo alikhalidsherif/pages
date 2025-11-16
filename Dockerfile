@@ -11,11 +11,17 @@ RUN npm ci --only=production
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+# Increase Node memory limit for build
+ENV NODE_OPTIONS=--max-old-space-size=4096
+
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
 RUN npm run build
+
+# Verify build output exists
+RUN ls -la /app/out || echo "Build output missing!"
 
 # Stage 3: Production
 FROM nginx:alpine

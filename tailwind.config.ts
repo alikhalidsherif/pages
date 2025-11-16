@@ -17,9 +17,9 @@ const config: Config = {
           darkGray: '#131820',
           gray: '#1f2430',
           lightGray: '#2d3540',
-          cyan: '#00e8c6',
-          green: '#00ff9f',
-          amber: '#ffb454',
+          cyan: '#f5f5f0',
+          green: '#ff3b3b',
+          amber: '#4a90e2',
           red: '#ff3333',
           blue: '#39bae6',
         }
@@ -38,10 +38,10 @@ const config: Config = {
       keyframes: {
         'glow-pulse': {
           '0%, 100%': {
-            boxShadow: '0 0 5px rgba(0, 232, 198, 0.5), 0 0 10px rgba(0, 232, 198, 0.3)',
+            boxShadow: '0 0 5px rgba(245, 245, 240, 0.5), 0 0 10px rgba(245, 245, 240, 0.3)',
           },
           '50%': {
-            boxShadow: '0 0 20px rgba(0, 232, 198, 0.8), 0 0 30px rgba(0, 232, 198, 0.5)',
+            boxShadow: '0 0 20px rgba(245, 245, 240, 0.8), 0 0 30px rgba(245, 245, 240, 0.5)',
           },
         },
         'float': {

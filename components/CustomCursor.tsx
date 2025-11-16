@@ -43,7 +43,7 @@ export default function CustomCursor() {
         }}
         animate={{
           scale: isHovering ? 1.5 : 1,
-          backgroundColor: isHovering ? 'rgba(0, 232, 198, 0.3)' : 'transparent',
+          backgroundColor: isHovering ? 'rgba(245, 245, 240, 0.3)' : 'transparent',
         }}
         transition={{ type: 'spring', stiffness: 500, damping: 28 }}
       />

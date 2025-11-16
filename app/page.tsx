@@ -4,13 +4,52 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import RoboticArm3D from '@/components/RoboticArm3D';
 import Terminal from '@/components/Terminal';
-import { useState } from 'react';
+import ParticleSystem from '@/components/ParticleSystem';
+import GripperEffects from '@/components/GripperEffects';
+import PerformanceMonitor from '@/components/PerformanceMonitor';
+import EasterEggs from '@/components/EasterEggs';
+import WelcomeGuide from '@/components/WelcomeGuide';
+import { useState, useRef, useCallback } from 'react';
+import * as THREE from 'three';
 
 export default function Home() {
   const [showTerminal, setShowTerminal] = useState(false);
+  const [gripperPosition, setGripperPosition] = useState<THREE.Vector3 | undefined>();
+  const [camera, setCamera] = useState<THREE.Camera | undefined>();
+
+  const handleGripperUpdate = useCallback((position: THREE.Vector3) => {
+    setGripperPosition(position);
+  }, []);
+
+  const handleCameraUpdate = useCallback((cam: THREE.Camera) => {
+    setCamera(cam);
+  }, []);
+
+  const handleParticleBurst = useCallback((x: number, y: number) => {
+    // Particle burst is handled by both components
+  }, []);
 
   return (
     <div className="relative">
+      {/* Particle System - 2D canvas overlay */}
+      <ParticleSystem />
+
+      {/* Gripper Effects - 2D canvas overlay */}
+      <GripperEffects
+        gripperPosition={gripperPosition}
+        camera={camera}
+        onParticleBurst={handleParticleBurst}
+      />
+
+      {/* Performance Monitor */}
+      <PerformanceMonitor />
+
+      {/* Easter Eggs Handler */}
+      <EasterEggs />
+
+      {/* Welcome Guide */}
+      <WelcomeGuide />
+
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 z-0">

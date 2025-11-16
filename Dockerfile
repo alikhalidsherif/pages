@@ -1,29 +1,30 @@
 # Multi-stage build for Next.js
 
-# Stage 1: Dependencies
-FROM node:20-alpine AS deps
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-RUN npm ci --only=production
-
-# Stage 2: Builder
+# Builder stage
 FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Increase Node memory limit for build
 ENV NODE_OPTIONS=--max-old-space-size=4096
 
-COPY package.json package-lock.json ./
-RUN npm ci
+# Configure npm for better network resilience
+RUN npm config set fetch-retry-mintimeout 20000 && \
+    npm config set fetch-retry-maxtimeout 120000 && \
+    npm config set fetch-timeout 300000 && \
+    npm config set fetch-retries 5
 
+# Install dependencies with retry logic
+COPY package.json package-lock.json ./
+RUN npm ci || npm ci || npm ci
+
+# Build the application
 COPY . .
 RUN npm run build
 
 # Verify build output exists
 RUN ls -la /app/out || echo "Build output missing!"
 
-# Stage 3: Production
+# Production stage
 FROM nginx:alpine
 
 # Copy Next.js static export

@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;700;900&display=swap');
+
+:root {
+  --background: #0a0e14;
+  --foreground: #e6e6e6;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'JetBrains Mono', monospace;
+  overflow-x: hidden;
+}
+
+/* Custom cursor */
+body {
+  cursor: none;
+}
+
+a, button {
+  cursor: none;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #131820;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00e8c6;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff9f;
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(0, 232, 198, 0.3);
+  color: #00ff9f;
+}
+
+/* Grid background effect */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 232, 198, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 232, 198, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+/* Scanline effect */
+.scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 232, 198, 0.1) 50%,
+    transparent 100%
+  );
+  animation: scan 8s linear infinite;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Glitch text effect */
+@keyframes glitch-anim {
+  0% {
+    clip: rect(42px, 9999px, 44px, 0);
+    transform: skew(0.5deg);
+  }
+  5% {
+    clip: rect(12px, 9999px, 59px, 0);
+    transform: skew(0.3deg);
+  }
+  10% {
+    clip: rect(48px, 9999px, 29px, 0);
+    transform: skew(0.2deg);
+  }
+  15% {
+    clip: rect(42px, 9999px, 73px, 0);
+    transform: skew(0.1deg);
+  }
+  20% {
+    clip: rect(63px, 9999px, 27px, 0);
+    transform: skew(0.4deg);
+  }
+  25% {
+    clip: rect(34px, 9999px, 55px, 0);
+    transform: skew(0.2deg);
+  }
+  30% {
+    clip: rect(86px, 9999px, 73px, 0);
+    transform: skew(0.5deg);
+  }
+  35% {
+    clip: rect(20px, 9999px, 20px, 0);
+    transform: skew(0.3deg);
+  }
+  40% {
+    clip: rect(26px, 9999px, 60px, 0);
+    transform: skew(0.2deg);
+  }
+  45% {
+    clip: rect(25px, 9999px, 66px, 0);
+    transform: skew(0.1deg);
+  }
+  50% {
+    clip: rect(57px, 9999px, 98px, 0);
+    transform: skew(0.4deg);
+  }
+  55% {
+    clip: rect(5px, 9999px, 46px, 0);
+    transform: skew(0.2deg);
+  }
+  60% {
+    clip: rect(82px, 9999px, 31px, 0);
+    transform: skew(0.5deg);
+  }
+  65% {
+    clip: rect(54px, 9999px, 27px, 0);
+    transform: skew(0.3deg);
+  }
+  70% {
+    clip: rect(28px, 9999px, 99px, 0);
+    transform: skew(0.2deg);
+  }
+  75% {
+    clip: rect(45px, 9999px, 60px, 0);
+    transform: skew(0.1deg);
+  }
+  80% {
+    clip: rect(23px, 9999px, 85px, 0);
+    transform: skew(0.4deg);
+  }
+  85% {
+    clip: rect(54px, 9999px, 84px, 0);
+    transform: skew(0.2deg);
+  }
+  90% {
+    clip: rect(45px, 9999px, 47px, 0);
+    transform: skew(0.5deg);
+  }
+  95% {
+    clip: rect(69px, 9999px, 17px, 0);
+    transform: skew(0.3deg);
+  }
+  100% {
+    clip: rect(67px, 9999px, 32px, 0);
+    transform: skew(0.2deg);
+  }
+}
+
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch::before {
+  left: 2px;
+  text-shadow: -2px 0 #ff3333;
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+  left: -2px;
+  text-shadow: -2px 0 #00e8c6;
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim 3s infinite linear alternate-reverse;
+}
+
+/* Glow text effect */
+.glow {
+  text-shadow:
+    0 0 10px rgba(0, 232, 198, 0.8),
+    0 0 20px rgba(0, 232, 198, 0.6),
+    0 0 30px rgba(0, 232, 198, 0.4),
+    0 0 40px rgba(0, 232, 198, 0.2);
+}
+
+/* Terminal text effect */
+.terminal-text {
+  font-family: 'JetBrains Mono', monospace;
+  color: #00e8c6;
+}
+
+/* Utility classes */
+.content-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}

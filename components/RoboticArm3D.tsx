@@ -571,7 +571,14 @@ interface RoboticArm3DProps {
 export default function RoboticArm3D(props: RoboticArm3DProps) {
   return (
     <div className="w-full h-full cursor-crosshair">
-      <Canvas>
+      <Canvas
+        gl={{
+          alpha: true,
+          antialias: true,
+          powerPreference: 'high-performance'
+        }}
+        style={{ background: 'transparent' }}
+      >
         <PerspectiveCamera makeDefault position={[6, 4, 6]} fov={50} />
 
         <ambientLight intensity={0.4} />

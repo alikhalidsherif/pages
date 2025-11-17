@@ -223,7 +223,7 @@ function LaserBeam({ start, end, active }: { start: THREE.Vector3; end: THREE.Ve
     const positions = new Float32Array(6);
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     const material = new THREE.LineBasicMaterial({
-      color: '#00e8c6',
+      color: '#f5f5f0',
       transparent: true,
       opacity: 0.3,
     });
@@ -233,7 +233,7 @@ function LaserBeam({ start, end, active }: { start: THREE.Vector3; end: THREE.Ve
   useEffect(() => {
     if (lineRef.current) {
       const material = lineRef.current.material as THREE.LineBasicMaterial;
-      material.color.set(active ? '#00ff9f' : '#00e8c6');
+      material.color.set(active ? '#ff3b3b' : '#f5f5f0');
       material.opacity = active ? 0.8 : 0.3;
     }
   }, [active]);
@@ -422,8 +422,8 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
   const armMaterial = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: '#00e8c6',
-        emissive: '#00e8c6',
+        color: '#f5f5f0',
+        emissive: '#f5f5f0',
         emissiveIntensity: 0.2,
         metalness: 0.8,
         roughness: 0.2,
@@ -434,8 +434,8 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
   const jointMaterial = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: '#ffb454',
-        emissive: '#ffb454',
+        color: '#4a90e2',
+        emissive: '#4a90e2',
         emissiveIntensity: 0.4,
         metalness: 0.9,
         roughness: 0.1,
@@ -446,8 +446,8 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
   const gripperMaterial = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
-        color: isGrabbing ? '#00ff9f' : '#00e8c6',
-        emissive: isGrabbing ? '#00ff9f' : '#00e8c6',
+        color: isGrabbing ? '#ff3b3b' : '#f5f5f0',
+        emissive: isGrabbing ? '#ff3b3b' : '#f5f5f0',
         emissiveIntensity: isGrabbing ? 0.6 : 0.3,
         metalness: 0.9,
         roughness: 0.1,
@@ -474,7 +474,7 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
             <primitive object={jointMaterial} />
           </mesh>
 
-          <Trail width={0.5} length={6} color="#00e8c6" attenuation={(width) => width * width}>
+          <Trail width={0.5} length={6} color="#f5f5f0" attenuation={(width) => width * width}>
             <mesh position={[0, ARM_CONFIG.shoulderLength / 2, 0]}>
               <boxGeometry args={[0.25, ARM_CONFIG.shoulderLength, 0.25]} />
               <primitive object={armMaterial} />
@@ -487,7 +487,7 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
               <primitive object={jointMaterial} />
             </mesh>
 
-            <Trail width={0.4} length={6} color="#00e8c6" attenuation={(width) => width * width}>
+            <Trail width={0.4} length={6} color="#f5f5f0" attenuation={(width) => width * width}>
               <mesh position={[0, ARM_CONFIG.elbowLength / 2, 0]}>
                 <boxGeometry args={[0.2, ARM_CONFIG.elbowLength, 0.2]} />
                 <primitive object={armMaterial} />
@@ -531,7 +531,7 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
                     position={[0, ARM_CONFIG.gripperLength / 2 + 0.2, 0]}
                     intensity={isGrabbing ? 2 : 0.5}
                     distance={2}
-                    color={isGrabbing ? '#00ff9f' : '#00e8c6'}
+                    color={isGrabbing ? '#ff3b3b' : '#f5f5f0'}
                   />
                 </group>
               </group>
@@ -575,22 +575,22 @@ export default function RoboticArm3D(props: RoboticArm3DProps) {
         <PerspectiveCamera makeDefault position={[6, 4, 6]} fov={50} />
 
         <ambientLight intensity={0.4} />
-        <pointLight position={[10, 10, 10]} intensity={1.5} color="#00e8c6" />
-        <pointLight position={[-10, 5, -10]} intensity={0.8} color="#ffb454" />
+        <pointLight position={[10, 10, 10]} intensity={1.5} color="#f5f5f0" />
+        <pointLight position={[-10, 5, -10]} intensity={0.8} color="#4a90e2" />
         <spotLight
           position={[0, 8, 0]}
           angle={0.4}
           penumbra={1}
           intensity={1.2}
-          color="#00ff9f"
+          color="#ff3b3b"
           castShadow
         />
 
-        <hemisphereLight args={['#00e8c6', '#ffb454', 0.5]} />
+        <hemisphereLight args={['#f5f5f0', '#4a90e2', 0.5]} />
 
         <RobotArm {...props} />
 
-        <gridHelper args={[20, 20, '#00e8c6', '#1a1d2e']} position={[0, 0, 0]} />
+        <gridHelper args={[20, 20, '#f5f5f0', '#1a1d2e']} position={[0, 0, 0]} />
 
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
           <planeGeometry args={[20, 20]} />

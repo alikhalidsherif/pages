@@ -53,7 +53,11 @@ export default function Home() {
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <RoboticArm3D />
+          <RoboticArm3D
+            onGripperUpdate={handleGripperUpdate}
+            onCameraUpdate={handleCameraUpdate}
+            onParticleBurst={handleParticleBurst}
+          />
         </div>
 
         <div className="content-container z-10 relative">

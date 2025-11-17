@@ -424,7 +424,7 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
       new THREE.MeshStandardMaterial({
         color: '#f5f5f0',
         emissive: '#f5f5f0',
-        emissiveIntensity: 0.2,
+        emissiveIntensity: 0.5,
         metalness: 0.8,
         roughness: 0.2,
       }),
@@ -436,7 +436,7 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
       new THREE.MeshStandardMaterial({
         color: '#4a90e2',
         emissive: '#4a90e2',
-        emissiveIntensity: 0.4,
+        emissiveIntensity: 0.7,
         metalness: 0.9,
         roughness: 0.1,
       }),
@@ -448,7 +448,7 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
       new THREE.MeshStandardMaterial({
         color: isGrabbing ? '#ff3b3b' : '#f5f5f0',
         emissive: isGrabbing ? '#ff3b3b' : '#f5f5f0',
-        emissiveIntensity: isGrabbing ? 0.6 : 0.3,
+        emissiveIntensity: isGrabbing ? 0.8 : 0.5,
         metalness: 0.9,
         roughness: 0.1,
       }),
@@ -540,7 +540,8 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
         </group>
       </group>
 
-      <Sphere args={[0.15]} position={targetPos}>
+      {/* Target indicator - hidden for cleaner look */}
+      {/* <Sphere args={[0.15]} position={targetPos}>
         <meshStandardMaterial
           color="#ff00ff"
           emissive="#ff00ff"
@@ -549,7 +550,7 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
           opacity={0.3}
           wireframe
         />
-      </Sphere>
+      </Sphere> */}
 
       <LaserBeam start={endEffectorPos.current} end={targetPos} active={isGrabbing} />
 

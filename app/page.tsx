@@ -9,7 +9,7 @@ import GripperEffects from '@/components/GripperEffects';
 import PerformanceMonitor from '@/components/PerformanceMonitor';
 import EasterEggs from '@/components/EasterEggs';
 import WelcomeGuide from '@/components/WelcomeGuide';
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, Suspense } from 'react';
 import * as THREE from 'three';
 
 export default function Home() {
@@ -53,11 +53,13 @@ export default function Home() {
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <RoboticArm3D
-            onGripperUpdate={handleGripperUpdate}
-            onCameraUpdate={handleCameraUpdate}
-            onParticleBurst={handleParticleBurst}
-          />
+          <Suspense fallback={<div className="w-full h-full bg-transparent" />}>
+            <RoboticArm3D
+              onGripperUpdate={handleGripperUpdate}
+              onCameraUpdate={handleCameraUpdate}
+              onParticleBurst={handleParticleBurst}
+            />
+          </Suspense>
         </div>
 
         <div className="content-container z-10 relative">

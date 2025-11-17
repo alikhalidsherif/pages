@@ -31,15 +31,15 @@ export default function Home() {
 
   return (
     <div className="relative">
-      {/* Particle System - 2D canvas overlay */}
-      <ParticleSystem />
+      {/* Particle System - TEMPORARILY DISABLED (was blocking view) */}
+      {/* <ParticleSystem /> */}
 
-      {/* Gripper Effects - 2D canvas overlay */}
-      <GripperEffects
+      {/* Gripper Effects - TEMPORARILY DISABLED (was blocking view) */}
+      {/* <GripperEffects
         gripperPosition={gripperPosition}
         camera={camera}
         onParticleBurst={handleParticleBurst}
-      />
+      /> */}
 
       {/* Performance Monitor */}
       <PerformanceMonitor />

@@ -300,22 +300,32 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
 
       raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
 
-      // Create a vertical working plane at Z=5 (in front of the arm)
+      // Create a vertical working plane at Z=4 (adjusted for better tracking)
       // This makes the arm reach forward to a vertical XY plane
-      const workingPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -5);
+      const workingPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -4);
       const target = new THREE.Vector3();
-      const intersected = raycaster.ray.intersectPlane(workingPlane, target);
+      let intersected = raycaster.ray.intersectPlane(workingPlane, target);
 
+      // Fallback: If primary plane intersection fails, try alternative depths
       if (!intersected) {
-        return;
+        const altPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -6);
+        intersected = raycaster.ray.intersectPlane(altPlane, target);
+      }
+
+      // Final fallback: Project at fixed distance from camera
+      if (!intersected) {
+        const direction = raycaster.ray.direction.clone().normalize();
+        target.copy(raycaster.ray.origin).add(direction.multiplyScalar(8));
       }
 
       // Clamp to maximum horizontal reach
       const maxReach =
         ARM_CONFIG.shoulderLength + ARM_CONFIG.elbowLength + ARM_CONFIG.wristLength - 0.5;
-      const horizontalDist = Math.abs(target.x);
+      const horizontalDist = Math.sqrt(target.x * target.x + target.z * target.z);
       if (horizontalDist > maxReach) {
-        target.x = (target.x / horizontalDist) * maxReach;
+        const scale = maxReach / horizontalDist;
+        target.x *= scale;
+        target.z *= scale;
       }
 
       // Clamp vertical position to reasonable working height

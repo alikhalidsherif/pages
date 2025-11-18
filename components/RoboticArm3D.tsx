@@ -23,11 +23,11 @@ interface ArmConfig {
 }
 
 const ARM_CONFIG: ArmConfig = {
-  baseHeight: 0.5,
-  shoulderLength: 2.0,
-  elbowLength: 1.5,
-  wristLength: 0.8,
-  gripperLength: 0.4,
+  baseHeight: 0.8,
+  shoulderLength: 3.0,
+  elbowLength: 2.5,
+  wristLength: 1.2,
+  gripperLength: 0.6,
 };
 
 const JOINT_LIMITS = {
@@ -300,9 +300,14 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
 
       raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
 
-      const planeDistance = 5;
-      const ray = raycaster.ray;
-      const target = ray.origin.clone().add(ray.direction.multiplyScalar(planeDistance));
+      // Create a plane at a comfortable working height for the arm
+      const workingPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+      const target = new THREE.Vector3();
+      raycaster.ray.intersectPlane(workingPlane, target);
+
+      if (!target) {
+        return;
+      }
 
       const maxReach =
         ARM_CONFIG.shoulderLength + ARM_CONFIG.elbowLength + ARM_CONFIG.wristLength - 0.5;
@@ -312,7 +317,7 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
         target.z = (target.z / dist) * maxReach;
       }
 
-      target.y = clamp(target.y, 0.5, 4);
+      target.y = clamp(target.y, 1, 6);
 
       setTargetPos(target);
     };
@@ -458,72 +463,72 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
   return (
     <group position={[0, 0, 0]}>
       <group ref={baseRef} position={[0, 0, 0]}>
-        <mesh position={[0, 0.15, 0]}>
-          <cylinderGeometry args={[0.6, 0.8, 0.3, 32]} />
+        <mesh position={[0, 0.25, 0]}>
+          <cylinderGeometry args={[1.0, 1.2, 0.5, 32]} />
           <primitive object={jointMaterial} />
         </mesh>
 
-        <mesh position={[0, 0.05, 0]}>
-          <torusGeometry args={[0.75, 0.05, 16, 32]} />
+        <mesh position={[0, 0.1, 0]}>
+          <torusGeometry args={[1.2, 0.1, 16, 32]} />
           <primitive object={armMaterial} />
         </mesh>
 
         <group ref={shoulderRef} position={[0, ARM_CONFIG.baseHeight, 0]}>
           <mesh>
-            <sphereGeometry args={[0.3, 32, 32]} />
+            <sphereGeometry args={[0.5, 32, 32]} />
             <primitive object={jointMaterial} />
           </mesh>
 
-          <Trail width={0.5} length={6} color="#f5f5f0" attenuation={(width) => width * width}>
+          <Trail width={0.8} length={6} color="#f5f5f0" attenuation={(width) => width * width}>
             <mesh position={[0, ARM_CONFIG.shoulderLength / 2, 0]}>
-              <boxGeometry args={[0.25, ARM_CONFIG.shoulderLength, 0.25]} />
+              <boxGeometry args={[0.4, ARM_CONFIG.shoulderLength, 0.4]} />
               <primitive object={armMaterial} />
             </mesh>
           </Trail>
 
           <group ref={elbowRef} position={[0, ARM_CONFIG.shoulderLength, 0]}>
             <mesh>
-              <sphereGeometry args={[0.25, 32, 32]} />
+              <sphereGeometry args={[0.4, 32, 32]} />
               <primitive object={jointMaterial} />
             </mesh>
 
-            <Trail width={0.4} length={6} color="#f5f5f0" attenuation={(width) => width * width}>
+            <Trail width={0.6} length={6} color="#f5f5f0" attenuation={(width) => width * width}>
               <mesh position={[0, ARM_CONFIG.elbowLength / 2, 0]}>
-                <boxGeometry args={[0.2, ARM_CONFIG.elbowLength, 0.2]} />
+                <boxGeometry args={[0.35, ARM_CONFIG.elbowLength, 0.35]} />
                 <primitive object={armMaterial} />
               </mesh>
             </Trail>
 
             <group ref={wristPitchRef} position={[0, ARM_CONFIG.elbowLength, 0]}>
               <mesh>
-                <sphereGeometry args={[0.18, 32, 32]} />
+                <sphereGeometry args={[0.3, 32, 32]} />
                 <primitive object={jointMaterial} />
               </mesh>
 
               <mesh position={[0, ARM_CONFIG.wristLength / 2, 0]}>
-                <cylinderGeometry args={[0.12, 0.15, ARM_CONFIG.wristLength, 16]} />
+                <cylinderGeometry args={[0.2, 0.25, ARM_CONFIG.wristLength, 16]} />
                 <primitive object={armMaterial} />
               </mesh>
 
               <group ref={wristRollRef} position={[0, ARM_CONFIG.wristLength, 0]}>
                 <mesh>
-                  <sphereGeometry args={[0.15, 32, 32]} />
+                  <sphereGeometry args={[0.25, 32, 32]} />
                   <primitive object={jointMaterial} />
                 </mesh>
 
                 <group ref={endEffectorRef} position={[0, ARM_CONFIG.gripperLength / 2, 0]}>
                   <mesh>
-                    <cylinderGeometry args={[0.15, 0.1, ARM_CONFIG.gripperLength, 16]} />
+                    <cylinderGeometry args={[0.25, 0.18, ARM_CONFIG.gripperLength, 16]} />
                     <primitive object={gripperMaterial} />
                   </mesh>
 
-                  <mesh ref={gripperLeftRef} position={[-0.15, ARM_CONFIG.gripperLength / 2, 0]}>
-                    <boxGeometry args={[0.08, 0.4, 0.08]} />
+                  <mesh ref={gripperLeftRef} position={[-0.25, ARM_CONFIG.gripperLength / 2, 0]}>
+                    <boxGeometry args={[0.12, 0.6, 0.12]} />
                     <primitive object={gripperMaterial} />
                   </mesh>
 
-                  <mesh ref={gripperRightRef} position={[0.15, ARM_CONFIG.gripperLength / 2, 0]}>
-                    <boxGeometry args={[0.08, 0.4, 0.08]} />
+                  <mesh ref={gripperRightRef} position={[0.25, ARM_CONFIG.gripperLength / 2, 0]}>
+                    <boxGeometry args={[0.12, 0.6, 0.12]} />
                     <primitive object={gripperMaterial} />
                   </mesh>
 
@@ -580,25 +585,25 @@ export default function RoboticArm3D(props: RoboticArm3DProps) {
         }}
         style={{ background: 'transparent' }}
       >
-        <PerspectiveCamera makeDefault position={[6, 4, 6]} fov={50} />
+        <PerspectiveCamera makeDefault position={[0, 6, 12]} fov={50} />
 
-        <ambientLight intensity={0.4} />
-        <pointLight position={[10, 10, 10]} intensity={1.5} color="#f5f5f0" />
-        <pointLight position={[-10, 5, -10]} intensity={0.8} color="#4a90e2" />
+        <ambientLight intensity={0.6} />
+        <pointLight position={[10, 10, 10]} intensity={2} color="#f5f5f0" />
+        <pointLight position={[-10, 5, -10]} intensity={1.2} color="#4a90e2" />
         <spotLight
-          position={[0, 8, 0]}
-          angle={0.4}
+          position={[0, 15, 0]}
+          angle={0.5}
           penumbra={1}
-          intensity={1.2}
+          intensity={2}
           color="#ff3b3b"
           castShadow
         />
 
-        <hemisphereLight args={['#f5f5f0', '#4a90e2', 0.5]} />
+        <hemisphereLight args={['#f5f5f0', '#4a90e2', 0.8]} />
 
         <RobotArm {...props} />
 
-        <gridHelper args={[20, 20, '#f5f5f0', '#1a1d2e']} position={[0, 0, 0]} />
+        <gridHelper args={[30, 30, '#f5f5f0', '#1a1d2e']} position={[0, 0, 0]} />
 
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
           <planeGeometry args={[20, 20]} />

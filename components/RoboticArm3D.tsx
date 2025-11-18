@@ -81,9 +81,9 @@ function solveIK(
 ): IKResult {
   const result = { ...currentAngles };
 
-  // Base rotation to face target
+  // Base rotation to face target (adjusted by 90 degrees for correct orientation)
   const targetXZ = new THREE.Vector2(target.x, target.z);
-  result.baseRotation = Math.atan2(targetXZ.x, targetXZ.y);
+  result.baseRotation = Math.atan2(targetXZ.x, targetXZ.y) + Math.PI / 2;
 
   // 2D IK in side view
   const distXZ = Math.sqrt(target.x * target.x + target.z * target.z);
@@ -300,22 +300,28 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
 
       raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
 
-      // Create a vertical working plane at Z=4 (adjusted for better tracking)
-      // This makes the arm reach forward to a vertical XY plane
-      const workingPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -4);
+      // Use a horizontal working plane at Y=3 (mid-height of arm's working range)
+      // This creates a more intuitive cursor-to-arm mapping
+      const workingPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -3);
       const target = new THREE.Vector3();
       let intersected = raycaster.ray.intersectPlane(workingPlane, target);
 
-      // Fallback: If primary plane intersection fails, try alternative depths
+      // Fallback: If primary plane intersection fails, try different heights
       if (!intersected) {
-        const altPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -6);
+        const altPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -2);
         intersected = raycaster.ray.intersectPlane(altPlane, target);
+      }
+
+      // Second fallback: Try ground level
+      if (!intersected) {
+        const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+        intersected = raycaster.ray.intersectPlane(groundPlane, target);
       }
 
       // Final fallback: Project at fixed distance from camera
       if (!intersected) {
         const direction = raycaster.ray.direction.clone().normalize();
-        target.copy(raycaster.ray.origin).add(direction.multiplyScalar(8));
+        target.copy(raycaster.ray.origin).add(direction.multiplyScalar(10));
       }
 
       // Clamp to maximum horizontal reach

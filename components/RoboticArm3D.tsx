@@ -81,9 +81,9 @@ function solveIK(
 ): IKResult {
   const result = { ...currentAngles };
 
-  // Base rotation to face target (adjusted by 90 degrees for correct orientation)
-  const targetXZ = new THREE.Vector2(target.x, target.z);
-  result.baseRotation = Math.atan2(targetXZ.x, targetXZ.y) + Math.PI / 2;
+  // Base rotation to face target
+  // Using atan2 with X and Z to get angle in XZ plane
+  result.baseRotation = Math.atan2(target.x, target.z);
 
   // 2D IK in side view
   const distXZ = Math.sqrt(target.x * target.x + target.z * target.z);
@@ -252,7 +252,7 @@ interface RobotArmProps {
 }
 
 function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArmProps) {
-  const { camera, raycaster } = useThree();
+  const { camera } = useThree();  // Still needed for onCameraUpdate callback
 
   const baseRef = useRef<THREE.Group>(null);
   const shoulderRef = useRef<THREE.Group>(null);
@@ -295,47 +295,21 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
-      const x = (event.clientX / window.innerWidth) * 2 - 1;
-      const y = -(event.clientY / window.innerHeight) * 2 + 1;
+      // Normalized cursor position (-1 to 1)
+      const cursorX = (event.clientX / window.innerWidth) * 2 - 1;
+      const cursorY = -(event.clientY / window.innerHeight) * 2 + 1;
 
-      raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
+      // Map cursor position directly to world space
+      // X: cursor left-right maps to world left-right
+      // Y: cursor up-down maps to world height
+      // Z: fixed depth in front of the arm
+      const maxReach = ARM_CONFIG.shoulderLength + ARM_CONFIG.elbowLength + ARM_CONFIG.wristLength - 1;
 
-      // Use a horizontal working plane at Y=3 (mid-height of arm's working range)
-      // This creates a more intuitive cursor-to-arm mapping
-      const workingPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -3);
-      const target = new THREE.Vector3();
-      let intersected = raycaster.ray.intersectPlane(workingPlane, target);
-
-      // Fallback: If primary plane intersection fails, try different heights
-      if (!intersected) {
-        const altPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -2);
-        intersected = raycaster.ray.intersectPlane(altPlane, target);
-      }
-
-      // Second fallback: Try ground level
-      if (!intersected) {
-        const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-        intersected = raycaster.ray.intersectPlane(groundPlane, target);
-      }
-
-      // Final fallback: Project at fixed distance from camera
-      if (!intersected) {
-        const direction = raycaster.ray.direction.clone().normalize();
-        target.copy(raycaster.ray.origin).add(direction.multiplyScalar(10));
-      }
-
-      // Clamp to maximum horizontal reach
-      const maxReach =
-        ARM_CONFIG.shoulderLength + ARM_CONFIG.elbowLength + ARM_CONFIG.wristLength - 0.5;
-      const horizontalDist = Math.sqrt(target.x * target.x + target.z * target.z);
-      if (horizontalDist > maxReach) {
-        const scale = maxReach / horizontalDist;
-        target.x *= scale;
-        target.z *= scale;
-      }
-
-      // Clamp vertical position to reasonable working height
-      target.y = clamp(target.y, 0.5, 7);
+      const target = new THREE.Vector3(
+        cursorX * maxReach * 0.8,  // X follows cursor horizontally
+        clamp((cursorY + 0.5) * maxReach * 0.6 + 1.5, 1, 6),  // Y follows cursor vertically
+        maxReach * 0.5  // Z is constant forward distance
+      );
 
       setTargetPos(target);
     };
@@ -379,7 +353,7 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('click', handleClick);
     };
-  }, [camera, raycaster, onParticleBurst]);
+  }, [onParticleBurst]);
 
   useFrame((state, delta) => {
     const targetAngles = solveIK(targetPos, ARM_CONFIG, angles.current);

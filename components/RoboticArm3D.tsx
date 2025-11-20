@@ -252,7 +252,7 @@ interface RobotArmProps {
 }
 
 function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArmProps) {
-  const { camera } = useThree();  // Still needed for onCameraUpdate callback
+  const { camera, pointer } = useThree();
 
   const baseRef = useRef<THREE.Group>(null);
   const shoulderRef = useRef<THREE.Group>(null);
@@ -263,10 +263,13 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
   const gripperRightRef = useRef<THREE.Mesh>(null);
   const endEffectorRef = useRef<THREE.Group>(null);
 
-  const [targetPos, setTargetPos] = useState(new THREE.Vector3(0, 2, 3));
+  const targetPos = useRef(new THREE.Vector3(0, 2, 3));
   const [gripperOpen, setGripperOpen] = useState(true);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [isGrabbing, setIsGrabbing] = useState(false);
+
+  // Create a vertical plane for raycasting (perpendicular to camera view)
+  const workingPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 0, 1), -3), []);
 
   const angles = useRef<IKResult>({
     baseRotation: 0,
@@ -294,26 +297,6 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
   }, [camera, onCameraUpdate]);
 
   useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      // Normalized cursor position (-1 to 1)
-      const cursorX = (event.clientX / window.innerWidth) * 2 - 1;
-      const cursorY = -(event.clientY / window.innerHeight) * 2 + 1;
-
-      // Map cursor position directly to world space
-      // X: cursor left-right maps to world left-right
-      // Y: cursor up-down maps to world height
-      // Z: fixed depth in front of the arm
-      const maxReach = ARM_CONFIG.shoulderLength + ARM_CONFIG.elbowLength + ARM_CONFIG.wristLength - 1;
-
-      const target = new THREE.Vector3(
-        cursorX * maxReach * 0.8,  // X follows cursor horizontally
-        clamp((cursorY + 0.5) * maxReach * 0.6 + 1.5, 1, 6),  // Y follows cursor vertically
-        maxReach * 0.5  // Z is constant forward distance
-      );
-
-      setTargetPos(target);
-    };
-
     const handleClick = (event: MouseEvent) => {
       setIsGrabbing(true);
       setGripperOpen(false);
@@ -346,17 +329,36 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
       }, 500);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('click', handleClick);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('click', handleClick);
     };
   }, [onParticleBurst]);
 
   useFrame((state, delta) => {
-    const targetAngles = solveIK(targetPos, ARM_CONFIG, angles.current);
+    // Update target position from mouse using raycaster
+    const intersection = new THREE.Vector3();
+    const hasIntersection = state.raycaster.ray.intersectPlane(workingPlane, intersection);
+
+    if (hasIntersection) {
+      // Clamp to maximum reach
+      const maxReach = ARM_CONFIG.shoulderLength + ARM_CONFIG.elbowLength + ARM_CONFIG.wristLength - 0.5;
+      const horizontalDist = Math.sqrt(intersection.x * intersection.x + intersection.z * intersection.z);
+
+      if (horizontalDist > maxReach) {
+        const scale = maxReach / horizontalDist;
+        intersection.x *= scale;
+        intersection.z *= scale;
+      }
+
+      // Clamp vertical position
+      intersection.y = clamp(intersection.y, 0.5, 6.5);
+
+      targetPos.current.copy(intersection);
+    }
+
+    const targetAngles = solveIK(targetPos.current, ARM_CONFIG, angles.current);
 
     angles.current.baseRotation = smoothDamp(
       angles.current.baseRotation,
@@ -549,7 +551,7 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
         />
       </Sphere> */}
 
-      <LaserBeam start={endEffectorPos.current} end={targetPos} active={isGrabbing} />
+      <LaserBeam start={endEffectorPos.current} end={targetPos.current} active={isGrabbing} />
 
       <Particles particles={particles} />
     </group>

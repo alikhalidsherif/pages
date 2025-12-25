@@ -6,12 +6,12 @@ import CustomCursor from "@/components/CustomCursor";
 import GridBackground from "@/components/GridBackground";
 
 export const metadata: Metadata = {
-  title: "AshReef Labs | Ali Khalid Ahmed",
+  title: "AshReef Labs | Ali Sherif",
   description: "Engineering systems that think, move, and adapt. Full-stack developer, AI engineer, and robotics specialist.",
-  keywords: "Ali Khalid Ahmed, AshReef Labs, AI Engineer, Robotics, Full Stack Developer, Machine Learning",
-  authors: [{ name: "Ali Khalid Ahmed" }],
+  keywords: "Ali Sherif, AshReef Labs, AI Engineer, Robotics, Full Stack Developer, Machine Learning",
+  authors: [{ name: "Ali Sherif" }],
   openGraph: {
-    title: "AshReef Labs | Ali Khalid Ahmed",
+      title: "AshReef Labs | Ali Sherif",
     description: "Engineering systems that think, move, and adapt",
     type: "website",
   },

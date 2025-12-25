@@ -252,7 +252,7 @@ interface RobotArmProps {
 }
 
 function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArmProps) {
-  const { camera, pointer } = useThree();
+  const { camera } = useThree();
 
   const baseRef = useRef<THREE.Group>(null);
   const shoulderRef = useRef<THREE.Group>(null);
@@ -264,12 +264,16 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
   const endEffectorRef = useRef<THREE.Group>(null);
 
   const targetPos = useRef(new THREE.Vector3(0, 2, 3));
+  const intersectionPoint = useRef(new THREE.Vector3());
+  const pointerNDC = useRef(new THREE.Vector2(0, 0));
+  const planeAnchor = useRef(targetPos.current.clone());
+  const cameraDirection = useRef(new THREE.Vector3(0, 0, -1));
   const [gripperOpen, setGripperOpen] = useState(true);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [isGrabbing, setIsGrabbing] = useState(false);
 
-  // Create a vertical plane for raycasting (perpendicular to camera view)
-  const workingPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 0, 1), -3), []);
+  // Plane will track the camera direction so cursor mapping stays accurate even over UI overlays
+  const workingPlane = useMemo(() => new THREE.Plane(), []);
 
   const angles = useRef<IKResult>({
     baseRotation: 0,
@@ -295,6 +299,16 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
       onCameraUpdate(camera);
     }
   }, [camera, onCameraUpdate]);
+
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      pointerNDC.current.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointerNDC.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    return () => window.removeEventListener('pointermove', handlePointerMove);
+  }, []);
 
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
@@ -338,7 +352,10 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
 
   useFrame((state, delta) => {
     // Update target position from mouse using raycaster
-    const intersection = new THREE.Vector3();
+    const intersection = intersectionPoint.current;
+    state.camera.getWorldDirection(cameraDirection.current);
+    workingPlane.setFromNormalAndCoplanarPoint(cameraDirection.current, planeAnchor.current);
+    state.raycaster.setFromCamera(pointerNDC.current, state.camera);
     const hasIntersection = state.raycaster.ray.intersectPlane(workingPlane, intersection);
 
     if (hasIntersection) {
@@ -355,8 +372,10 @@ function RobotArm({ onGripperUpdate, onCameraUpdate, onParticleBurst }: RobotArm
       // Clamp vertical position
       intersection.y = clamp(intersection.y, 0.5, 6.5);
 
-      targetPos.current.copy(intersection);
+      targetPos.current.lerp(intersection, 0.25);
     }
+
+    planeAnchor.current.lerp(targetPos.current, 0.15);
 
     const targetAngles = solveIK(targetPos.current, ARM_CONFIG, angles.current);
 

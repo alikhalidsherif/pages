@@ -18,7 +18,7 @@ export default function WelcomeGuide() {
   const steps = [
     {
       title: 'Welcome to AshReef Labs!',
-      description: 'An interactive portfolio with hidden features and easter eggs.',
+      description: 'A robotics-first portfolio showcasing shipped AI products and prototypes.',
       icon: '🤖',
     },
     {
@@ -27,19 +27,19 @@ export default function WelcomeGuide() {
       icon: '🦾',
     },
     {
-      title: 'Press P for Performance',
-      description: 'Toggle the performance monitor to see FPS and arm telemetry in real-time.',
+      title: 'Use the Terminal',
+      description: 'Launch the terminal for fast access to skills, services, and project summaries.',
+      icon: '⌨️',
+    },
+    {
+      title: 'Track Performance',
+      description: 'Press P to toggle live FPS and telemetry to see the rig running in real-time.',
       icon: '📊',
     },
     {
-      title: 'Teaching Mode',
-      description: 'Press T to enable teaching mode - the arm will follow your cursor!',
-      icon: '🎓',
-    },
-    {
-      title: 'Easter Eggs Await!',
-      description: 'Try the Konami code, double-click, or hold Shift for slow motion. Type "easter" in the terminal for more!',
-      icon: '🥚',
+      title: 'Ready to Collaborate',
+      description: 'Explore the Projects and Contact sections to start a build or engagement.',
+      icon: '📬',
     },
   ];
 

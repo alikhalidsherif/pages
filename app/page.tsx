@@ -7,7 +7,6 @@ import Terminal from '@/components/Terminal';
 import ParticleSystem from '@/components/ParticleSystem';
 import GripperEffects from '@/components/GripperEffects';
 import PerformanceMonitor from '@/components/PerformanceMonitor';
-import EasterEggs from '@/components/EasterEggs';
 import WelcomeGuide from '@/components/WelcomeGuide';
 import { useState, useRef, useCallback, Suspense } from 'react';
 import * as THREE from 'three';
@@ -43,9 +42,6 @@ export default function Home() {
 
       {/* Performance Monitor */}
       <PerformanceMonitor />
-
-      {/* Easter Eggs Handler */}
-      <EasterEggs />
 
       {/* Welcome Guide */}
       <WelcomeGuide />
@@ -97,7 +93,21 @@ export default function Home() {
               transition={{ delay: 0.6, duration: 0.8 }}
               className="text-lg text-gray-400 mb-12"
             >
-              <p className="mb-2">Ali Khalid Ahmed</p>
+              <div className="mb-2">
+                <div className="relative inline-flex items-center justify-center group px-6 py-2 font-mono tracking-wide">
+                  <span className="sr-only">Ali Sherif</span>
+                  <span className="text-terminal-cyan transition-opacity duration-300 group-hover:opacity-0">
+                    Ali Sherif
+                  </span>
+                  <span className="absolute inset-0 flex items-center justify-center text-terminal-green opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    Ali Khalid Ahmed Sherif
+                  </span>
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute inset-x-0 top-0 h-1/2 bg-terminal-black/80 border-b border-terminal-cyan/30 origin-top transition-transform duration-300 group-hover:-translate-y-full" />
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-terminal-black/80 border-t border-terminal-cyan/30 origin-bottom transition-transform duration-300 group-hover:translate-y-full" />
+                  </div>
+                </div>
+              </div>
               <p className="text-sm">Full-Stack Developer • AI Engineer • Robotics Specialist</p>
             </motion.div>
 

@@ -1,124 +1,62 @@
-# AshReef Labs Portfolio - New Features
+# AshReef Labs Portfolio - Feature Notes
 
 ## Overview
-This document outlines the advanced features and easter eggs added to make the portfolio stand out.
+This changelog captures the interactive systems that make the portfolio feel like a robotics workbench—performance tooling, a cursor-accurate robotic arm, and practical UI guidance that points visitors toward projects and services.
 
 ## 1. Performance Monitor Component
-**File**: `/home/user/portfolio/components/PerformanceMonitor.tsx`
+**File**: `components/PerformanceMonitor.tsx`
 
-### Features:
-- Real-time FPS counter with color-coded performance indicators
-  - Green: 55+ FPS (Excellent)
-  - Amber: 30-55 FPS (Good)
-  - Red: <30 FPS (Needs optimization)
-- Visual FPS bar graph
-- Arm telemetry display (when integrated with advanced arm)
-  - Joint angles in degrees
-  - Base rotation
-  - End effector position (X, Y, Z)
-
-### Usage:
-- Press `P` key to toggle the performance monitor on/off
-- Appears in top-right corner
-- Compact, minimalist design with terminal aesthetic
+### Highlights
+- Real-time FPS counter with color-coded status (green ≥55 FPS, amber 30‑55, red <30)
+- Progress bar for a quick health check
+- Optional arm telemetry block (joint angles, base rotation, XYZ position) ready for a future data feed
+- Toggles with the `P` key and renders as a compact overlay with the terminal aesthetic
 
 ---
 
-## 2. Easter Eggs System
-**File**: `/home/user/portfolio/components/EasterEggs.tsx`
+## 2. Robotic Arm Interaction Upgrades
+**File**: `components/RoboticArm3D.tsx`
 
-### Features Implemented:
-
-#### Konami Code
-- **Sequence**: ↑ ↑ ↓ ↓ ← → ← → B A
-- **Effect**: Spectacular animated message with falling stars
-- **Duration**: 5 seconds
-- **Visual**: Full-screen celebration with gradient overlay
-
-#### Double-Click Wave
-- **Trigger**: Double-click anywhere on the page
-- **Effect**: Special animation trigger (ready for arm integration)
-- **Timing**: 300ms window between clicks
-
-#### Slow Motion Mode
-- **Trigger**: Hold SHIFT key
-- **Effect**: Visual indicator in top-right corner
-- **Visual**: Turtle emoji with "SLOW MOTION MODE" badge
-- **Usage**: Can be integrated with animations for slow-mo effect
+### What Changed
+- Pointer tracking is now global (window-level `pointermove`) so the arm follows the cursor even when UI overlays sit above the canvas.
+- Raycasting plane is recalculated every frame to stay aligned with the camera’s forward vector, preventing “dead zones” and keeping movement feel consistent.
+- Target positions lerp toward the cursor intersection, yielding smoother curves instead of jittery snaps.
+- Plane anchor follows the last target which stabilizes depth calculations without locking the arm to a single Z value.
+- Existing IK, gripper animation, and particle burst logic remain intact, giving a tactile response when the gripper fires.
 
 ---
 
-## 3. Enhanced Terminal Commands
-**File**: `/home/user/portfolio/components/Terminal.tsx`
+## 3. Practical Terminal Commands
+**File**: `components/Terminal.tsx`
 
-### New Commands Added:
-
-#### `arm`
-Displays robotic arm control information:
-- Interactive controls explanation
-- Keyboard shortcuts reference
-- Feature overview (IK, DOF, particles, trails)
-
-#### `easter`
-Reveals all easter eggs:
-1. Konami Code instructions
-2. Double-click wave
-3. Slow motion mode
-4. Teaching mode toggle
-5. Performance monitor toggle
-
-### Updated Help Menu
-- Organized into categories:
-  - Personal information
-  - Robotic Arm Controls
-  - System commands
+### Key Updates
+- `help` now surfaces the new `services` command instead of pointing to easter eggs.
+- `arm` instructions were rewritten to reflect the new cursor tracking and to drop defunct keyboard shortcuts (Shift slow-mo, T teaching mode).
+- `services` outlines four engagement tracks (Robotics R&D, AI products, Full-stack delivery, DevOps/Infra) with a call to email `ali@ashreef.com`.
+- System shortcuts highlight pragmatic actions (`P` for performance overlay, `Esc` to exit terminal).
 
 ---
 
-## 4. Page Transitions
-**Files**:
-- `/home/user/portfolio/components/PageTransition.tsx`
-- `/home/user/portfolio/app/template.tsx`
+## 4. Welcome Guide
+**File**: `components/WelcomeGuide.tsx`
 
-### Transition Styles Available:
+### Current Step Flow
+1. **Welcome** – Positions the site as a robotics-first, production-led portfolio.
+2. **Robotic Arm** – Explains cursor + click controls.
+3. **Terminal** – Encourages launching the command palette for quick context.
+4. **Performance Monitor** – Reminds visitors about the `P` shortcut to see live stats.
+5. **Ready to Collaborate** – Directs traffic toward Projects and Contact for real engagements.
 
-#### Default Transition (Active)
-- Smooth fade with scale animation
-- Curtain effect on exit
-- Duration: 400ms enter, 300ms exit
-- Easing: Custom cubic-bezier for smooth feel
-
-#### Alternative Styles (Included):
-- **SlidePageTransition**: Horizontal slide with spring physics
-- **GlitchPageTransition**: Blur and hue-rotate effects
-
-### Features:
-- Smooth transitions between all pages
-- No flash or jump
-- Terminal-themed colors (cyan/green gradient)
-- Respects user's motion preferences
+The guide still respects first-visit detection with localStorage, includes progress indicators, and can be dismissed at any time.
 
 ---
 
-## 5. Welcome Guide
-**File**: `/home/user/portfolio/components/WelcomeGuide.tsx`
+## 5. Page Transitions
+**Files**: `components/PageTransition.tsx`, `app/template.tsx`
 
-### Features:
-- First-visit detection using localStorage
-- 5-step interactive tutorial
-- Progress indicator dots
-- Skip option available
-- Covers:
-  1. Portfolio introduction
-  2. Arm control basics
-  3. Performance monitor
-  4. Teaching mode
-  5. Easter eggs teaser
-
-### Auto-dismissal:
-- Shows only once per browser
-- Can be dismissed at any time
-- 2-second delay before appearance
+- Default transition keeps the curtain-style fade/scale combo (400 ms enter / 300 ms exit).
+- Alternative slide and glitch variants remain available for experimentation.
+- Transitions honor `prefers-reduced-motion` for accessibility.
 
 ---
 
@@ -127,108 +65,40 @@ Reveals all easter eggs:
 | Key | Function |
 |-----|----------|
 | `P` | Toggle Performance Monitor |
-| `T` | Toggle Teaching Mode (when implemented) |
-| `H` | Hide/Show easter egg hints |
-| `SHIFT` (hold) | Slow motion mode |
 | `ESC` | Close terminal |
 
 ---
 
-## Easter Eggs Quick Reference
-
-1. **Konami Code**: ↑ ↑ ↓ ↓ ← → ← → B A
-2. **Double-Click**: Double-click anywhere
-3. **Slow Motion**: Hold SHIFT key
-4. **Performance Monitor**: Press P
-5. **Terminal**: Type "easter" for full list
-
----
-
-## Component Integration
-
-### Current Page Structure (`app/page.tsx`):
+## Component Integration Snapshot (`app/page.tsx`)
 ```
 <div>
-  <ParticleSystem />
-  <GripperEffects />
-  <PerformanceMonitor />    ← NEW
-  <EasterEggs />            ← NEW
-  <WelcomeGuide />          ← NEW
-  <HeroSection />
+  {/* Optional VFX layers */}
+  <PerformanceMonitor />
+  <WelcomeGuide />
+  <HeroSection>
+    <RoboticArm3D ... />
+  </HeroSection>
   <Terminal />
 </div>
 ```
 
-### Global Layout (`app/layout.tsx` + `app/template.tsx`):
-- Page transitions applied globally via template.tsx
-- Smooth navigation between all routes
-
 ---
 
-## Future Enhancement Opportunities
-
-### Teaching Mode (Prepared):
-- Infrastructure in place for cursor pattern recording
-- Can be connected to arm component when ready
-- Interface defined in types
-
-### Arm Control Integration:
-- Performance Monitor supports arm telemetry display
-- Just needs arm data feed via props
-- Types already defined for seamless integration
-
----
-
-## Technical Details
-
-### Dependencies Used:
-- `framer-motion`: Page transitions and animations
-- `next/navigation`: Route detection for transitions
-- `localStorage`: Welcome guide persistence
-
-### Performance Considerations:
-- FPS monitor uses `requestAnimationFrame` for accuracy
-- Easter eggs use event delegation
-- Animations use CSS transforms for GPU acceleration
-- Components lazy-load where possible
-
----
-
-## Discoverability Features
-
-1. **Welcome Guide**: Introduces new users to features
-2. **Terminal Commands**: `help` and `easter` reveal functionality
-3. **Visual Hints**: Easter egg hints appear with `H` toggle
-4. **Intuitive Keys**: P for Performance, T for Teaching
-5. **Progressive Discovery**: Features revealed through exploration
-
----
-
-## Build Status
-
-✅ All components built successfully
-✅ No TypeScript errors
-✅ ESLint warnings only (non-breaking)
-✅ Optimized production build
-✅ 9 static routes generated
+## Discoverability & Next Steps
+1. Welcome Guide surfaces core interactions without gimmicks.
+2. Terminal doubles as a lightweight profile/offerings explorer.
+3. Performance Monitor gives a transparent look at runtime behavior—ideal for technical buyers.
+4. Future enhancement: feed live joint data into `PerformanceMonitor` and surface a “Book a Build” CTA near the hero.
 
 ---
 
 ## File Summary
+- `components/PerformanceMonitor.tsx`
+- `components/RoboticArm3D.tsx`
+- `components/Terminal.tsx`
+- `components/WelcomeGuide.tsx`
+- `components/PageTransition.tsx`
+- `app/page.tsx`
 
-**New Components Created:**
-- `/components/PerformanceMonitor.tsx` (5.8 KB)
-- `/components/EasterEggs.tsx` (5.1 KB)
-- `/components/PageTransition.tsx` (2.8 KB)
-- `/components/WelcomeGuide.tsx` (4.1 KB)
+These updates keep the playful robotic arm centerpiece while directing attention to real services, case studies, and performance insight.
 
-**Modified Files:**
-- `/components/Terminal.tsx` - Added arm and easter commands
-- `/app/page.tsx` - Integrated new components
-- `/app/template.tsx` - Added page transitions
-
-**Total New Code**: ~18 KB of delightful features!
-
----
-
-Made with care by Claude for AshReef Labs 🤖

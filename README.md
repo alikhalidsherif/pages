@@ -1,4 +1,4 @@
-# Ali Ahmed - Portfolio Website
+# Ali Sherif - Portfolio Website
 
 A modern, creative, and fully dockerized portfolio website showcasing full-stack development and AI engineering projects.
 
@@ -23,29 +23,30 @@ A modern, creative, and fully dockerized portfolio website showcasing full-stack
 
 ### Prerequisites
 
-- Docker installed on your system
-- Docker Compose (usually comes with Docker Desktop)
+- Node.js 18+ (Next.js requirement)
+- npm 10+ (ships with recent Node releases)
+- (Optional) Docker Desktop if you prefer containerized workflows
 
-### Running Locally
+### Local Development Server
 
-1. Clone or download this repository
-
-2. Navigate to the project directory:
 ```bash
-cd portfolio-website
+git clone https://github.com/<you>/portfolio.git
+cd portfolio
+npm install
+npm run dev
 ```
 
-3. Build and run with Docker Compose:
+Visit **http://localhost:3000** and the page will hot-reload as you edit files.
+
+### Production-like Preview (before pushing)
+
 ```bash
-docker-compose up -d
+npm run preview
 ```
 
-4. Access the website:
-```
-http://localhost:8080
-```
+Because the site uses `output: export`, this command runs `next build` (which writes the static site to `out/`) and then serves that directory via `npx serve` on **http://localhost:4000**. Use `Ctrl+C` to stop the server when you’re done reviewing.
 
-### Alternative: Build and Run with Docker
+### Containerized Option
 
 ```bash
 # Build the image
@@ -209,7 +210,7 @@ This portfolio template is free to use and modify for your own personal portfoli
 
 ## Contact
 
-**Ali Khalid Ahmed**
+**Ali Sherif (Ali Khalid Ahmed Sherif)**
 - Email: alikhalidsherif@gmail.com
 - Business: ali@ashreef.com
 - LinkedIn: [linkedin.com/in/alikhalidsherif](https://linkedin.com/in/alikhalidsherif)
@@ -217,4 +218,4 @@ This portfolio template is free to use and modify for your own personal portfoli
 
 ---
 
-Built with ❤️ and lots of ☕ by Ali Ahmed
+Built with ❤️ and lots of ☕ by Ali Sherif
